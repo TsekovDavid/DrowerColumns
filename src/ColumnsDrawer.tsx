@@ -24,12 +24,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-type Column = {
-  id: string;
-  label: string;
-  visible: boolean;
-};
+import type { Column } from "./App";
 
 type Props = {
   isOpen: boolean;
@@ -39,7 +34,7 @@ type Props = {
 };
 
 function SortableItem({ column, toggle }: { column: Column; toggle: () => void }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: column.id });
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: column._id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -57,8 +52,8 @@ function SortableItem({ column, toggle }: { column: Column; toggle: () => void }
       >
         <GripVertical />
       </IconButton>
-      <Text flex="1">{column.label}</Text>
-      <Switch.Root checked={column.visible} onCheckedChange={() => toggle()}>
+      <Text flex="1">{column.field_caption}</Text>
+      <Switch.Root checked={column._visible} onCheckedChange={() => toggle()}>
         <Switch.HiddenInput style={{ display: "none" }} />
         <Switch.Control />
       </Switch.Root>
@@ -70,8 +65,8 @@ function SimpleItem({ column, toggle }: { column: Column; toggle: () => void }) 
   return (
     <Flex align="center" p={2} bg="gray.50" mb={2} borderRadius="md">
       <Box w="24px" mr={2} /> {/* пустое место под иконку */}
-      <Text flex="1">{column.label}</Text>
-      <Switch.Root checked={column.visible} onCheckedChange={() => toggle()}>
+      <Text flex="1">{column.field_caption}</Text>
+      <Switch.Root checked={column._visible} onCheckedChange={() => toggle()}>
         <Switch.HiddenInput style={{ display: "none" }} />
         <Switch.Control />
       </Switch.Root>
@@ -95,10 +90,10 @@ export default function ColumnsDrawer({ isOpen, onClose, columns, onChange }: Pr
     if (!over) return;
     if (active.id !== over.id) {
       setLocalCols((items) => {
-        const visible = items.filter((c) => c.visible);
-        const hidden = items.filter((c) => !c.visible);
-        const oldIndex = visible.findIndex((i) => i.id === active.id);
-        const newIndex = visible.findIndex((i) => i.id === over.id);
+        const visible = items.filter((c) => c._visible);
+        const hidden = items.filter((c) => !c._visible);
+        const oldIndex = visible.findIndex((i) => i._id === active.id);
+        const newIndex = visible.findIndex((i) => i._id === over.id);
         const newVisible = arrayMove(visible, oldIndex, newIndex);
         const newItems = [...newVisible, ...hidden];
         onChange(newItems);
@@ -109,15 +104,15 @@ export default function ColumnsDrawer({ isOpen, onClose, columns, onChange }: Pr
 
   const toggleVisible = (id: string) => {
     setLocalCols((cols) => {
-      const updated = cols.map((c) => (c.id === id ? { ...c, visible: !c.visible } : c));
+      const updated = cols.map((c) => (c._id === id ? { ...c, _visible: !c._visible } : c));
       onChange(updated);
       return updated;
     });
   };
 
-  const filtered = localCols.filter((c) => c.label.toLowerCase().includes(search.toLowerCase()));
-  const visible = filtered.filter((c) => c.visible);
-  const hidden = filtered.filter((c) => !c.visible);
+  const filtered = localCols.filter((c) => c.field_caption.toLowerCase().includes(search.toLowerCase()));
+  const visible = filtered.filter((c) => c._visible);
+  const hidden = filtered.filter((c) => !c._visible);
 
   return (
     <Drawer.Root open={isOpen} placement="end" size="sm" onOpenChange={(e) => { if (!e.open) onClose(); }}>
@@ -137,9 +132,9 @@ export default function ColumnsDrawer({ isOpen, onClose, columns, onChange }: Pr
               Отображаемые поля
             </Text>
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={visible.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+              <SortableContext items={visible.map((c) => c._id)} strategy={verticalListSortingStrategy}>
                 {visible.map((c) => (
-                  <SortableItem key={c.id} column={c} toggle={() => toggleVisible(c.id)} />
+                  <SortableItem key={c._id} column={c} toggle={() => toggleVisible(c._id)} />
                 ))}
               </SortableContext>
             </DndContext>
@@ -150,7 +145,7 @@ export default function ColumnsDrawer({ isOpen, onClose, columns, onChange }: Pr
               Скрытые поля
             </Text>
             {hidden.map((c) => (
-              <SimpleItem key={c.id} column={c} toggle={() => toggleVisible(c.id)} />
+              <SimpleItem key={c._id} column={c} toggle={() => toggleVisible(c._id)} />
             ))}
           </Drawer.Body>
         </Drawer.Content>

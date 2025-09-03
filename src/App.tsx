@@ -2,27 +2,33 @@ import { useState } from "react";
 import { Button, Box, Table } from "@chakra-ui/react";
 import ColumnsDrawer from "./ColumnsDrawer";
 
-type Column = {
-  id: string;
-  label: string;
-  visible: boolean;
-};
+// type Column = {
+//   data_type: string;
+//   field_caption: string;
+//   field_description: string;
+//   is_custom: boolean;
+//   section: string;
+//   _id: string;
+//   _visible?: boolean;
+// };
+
 
 const initialColumns: Column[] = [
-  { id: "1", label: "Value 1", visible: true },
-  { id: "2", label: "Value 2", visible: true },
-  { id: "3", label: "Value 3", visible: true },
-  { id: "4", label: "Value 4", visible: false },
-  { id: "5", label: "Value 5", visible: false },
-  { id: "6", label: "Value 6", visible: false },
-  { id: "7", label: "Value 7", visible: false },
+  { data_type: "dd.mm.yyyy",_id: "1", section:"",is_custom: false, field_description:"description 1", field_caption: "Value 1", _visible: true },
+  { data_type: "dd.mm.yyyy",_id: "2", section:"",is_custom: false, field_description:"description 2", field_caption: "Value 2", _visible: true },
+  { data_type: "dd.mm.yyyy",_id: "3", section:"",is_custom: false, field_description:"description 3", field_caption: "Value 3", _visible: true },
+  { data_type: "dd.mm.yyyy",_id: "4", section:"",is_custom: false, field_description:"description 4", field_caption: "Value 4", _visible: false },
+  { data_type: "dd.mm.yyyy",_id: "5", section:"",is_custom: false, field_description:"description 5", field_caption: "Value 5", _visible: false },
+  { data_type: "dd.mm.yyyy",_id: "6", section:"",is_custom: false, field_description:"description 6", field_caption: "Value 6", _visible: false },
+  { data_type: "dd.mm.yyyy",_id: "7", section:"",is_custom: false, field_description:"description 7", field_caption: "Value 7", _visible: true }
+
 ];
 
 export default function App() {
   const [columns, setColumns] = useState(initialColumns);
   const [isOpen, setIsOpen] = useState(false);
 
-  const visibleCols = columns.filter((c) => c.visible);
+  const visibleCols = columns.filter((c) => c._visible);
 
   return (
     <Box p={4}>
@@ -34,14 +40,14 @@ export default function App() {
         <Table.Header>
           <Table.Row>
             {visibleCols.map((c) => (
-              <Table.ColumnHeader key={c.id}>{c.label}</Table.ColumnHeader>
+              <Table.ColumnHeader key={c._id}>{c.field_caption}</Table.ColumnHeader>
             ))}
           </Table.Row>
         </Table.Header>
         <Table.Body>
           <Table.Row>
             {visibleCols.map((c) => (
-              <Table.Cell key={c.id}>data {c.label}</Table.Cell>
+              <Table.Cell key={c._id}>data {c.field_description}</Table.Cell>
             ))}
           </Table.Row>
         </Table.Body>
@@ -56,3 +62,13 @@ export default function App() {
     </Box>
   );
 }
+
+export type Column = {
+  data_type: string;
+  field_caption: string;
+  field_description: string;
+  is_custom: boolean;
+  section: string;
+  _id: string;
+  _visible?: boolean;
+};
